@@ -5,6 +5,7 @@ import DestinationModal from './components/DestinationModal'
 import { useDartAnimation } from './hooks/useDartAnimation'
 import { generateEVGDescription } from './utils/generateEVGDescription'
 import { fetchCityImage } from './utils/fetchCityImage'
+import { playCityMusic, stopMusic } from './utils/playMusic'
 import type { Destination, ModalState } from './types'
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
     destination: null,
     weather: null,
     imageUrl: null,
+    nowPlaying: null,
     loading: false,
   });
 
@@ -22,16 +24,18 @@ function App() {
       destination,
       weather: null,
       imageUrl: null,
+      nowPlaying: null,
       loading: true,
     });
 
-    // Lancer météo, description IA et image en parallèle
-    const [description, weatherResult, imageResult] = await Promise.allSettled([
+    // Lancer météo, description IA, image et musique en parallèle
+    const [description, weatherResult, imageResult, musicResult] = await Promise.allSettled([
       generateEVGDescription(destination),
       fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${destination.lat}&longitude=${destination.lng}&current_weather=true&hourly=apparent_temperature`
       ).then((r) => r.json()),
       fetchCityImage(destination),
+      playCityMusic(destination.city),
     ]);
 
     const desc =
@@ -53,12 +57,14 @@ function App() {
     }
 
     const image = imageResult.status === 'fulfilled' ? imageResult.value : null;
+    const nowPlaying = musicResult.status === 'fulfilled' ? musicResult.value : null;
 
     setModalState({
       isOpen: true,
       destination: { ...destination, description: desc },
       weather: weatherData,
       imageUrl: image,
+      nowPlaying,
       loading: false,
     });
   }, []);
@@ -66,10 +72,12 @@ function App() {
   const { isAnimating, dartPosition, showImpact, throwDart } = useDartAnimation(handleLand);
 
   const handleClose = useCallback(() => {
+    stopMusic();
     setModalState((prev) => ({ ...prev, isOpen: false }));
   }, []);
 
   const handleRetry = useCallback(() => {
+    stopMusic();
     setModalState((prev) => ({ ...prev, isOpen: false }));
     setTimeout(() => throwDart(), 300);
   }, [throwDart]);

@@ -13,10 +13,16 @@ export interface WeatherData {
   feelsLike: number;
 }
 
+export interface NowPlaying {
+  trackName: string;
+  artistName: string;
+}
+
 export interface ModalState {
   isOpen: boolean;
   destination: Destination | null;
   weather: WeatherData | null;
   imageUrl: string | null;
+  nowPlaying: NowPlaying | null;
   loading: boolean;
 }

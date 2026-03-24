@@ -17,7 +17,7 @@ function SkeletonLine({ width }: { width: string }) {
 }
 
 export default function DestinationModal({ state, onClose, onRetry }: DestinationModalProps) {
-  const { isOpen, destination, weather, imageUrl, loading } = state;
+  const { isOpen, destination, weather, imageUrl, nowPlaying, loading } = state;
 
   return (
     <AnimatePresence>
@@ -125,6 +125,16 @@ export default function DestinationModal({ state, onClose, onRetry }: Destinatio
                   </p>
                 )}
               </div>
+
+              {/* Now Playing */}
+              {nowPlaying && (
+                <div className="mb-6 flex items-center gap-2 text-xs text-slate-500">
+                  <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <span className="truncate">
+                    🎵 {nowPlaying.trackName} — {nowPlaying.artistName}
+                  </span>
+                </div>
+              )}
 
               {/* Boutons */}
               <div className="flex gap-3">
