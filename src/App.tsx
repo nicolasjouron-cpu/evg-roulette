@@ -12,6 +12,7 @@ function App() {
     isOpen: false,
     destination: null,
     weather: null,
+    imageUrl: null,
     loading: false,
   });
 
