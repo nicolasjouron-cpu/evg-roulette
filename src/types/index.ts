@@ -17,5 +17,6 @@ export interface ModalState {
   isOpen: boolean;
   destination: Destination | null;
   weather: WeatherData | null;
+  imageUrl: string | null;
   loading: boolean;
 }

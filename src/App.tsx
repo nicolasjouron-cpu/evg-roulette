@@ -4,6 +4,7 @@ import WorldMap from './components/WorldMap'
 import DestinationModal from './components/DestinationModal'
 import { useDartAnimation } from './hooks/useDartAnimation'
 import { generateEVGDescription } from './utils/generateEVGDescription'
+import { fetchCityImage } from './utils/fetchCityImage'
 import type { Destination, ModalState } from './types'
 
 function App() {
@@ -19,15 +20,17 @@ function App() {
       isOpen: true,
       destination,
       weather: null,
+      imageUrl: null,
       loading: true,
     });
 
-    // Lancer météo et description IA en parallèle
-    const [description, weatherResult] = await Promise.allSettled([
+    // Lancer météo, description IA et image en parallèle
+    const [description, weatherResult, imageResult] = await Promise.allSettled([
       generateEVGDescription(destination),
       fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${destination.lat}&longitude=${destination.lng}&current_weather=true&hourly=apparent_temperature`
       ).then((r) => r.json()),
+      fetchCityImage(destination),
     ]);
 
     const desc =
@@ -48,10 +51,13 @@ function App() {
       };
     }
 
+    const image = imageResult.status === 'fulfilled' ? imageResult.value : null;
+
     setModalState({
       isOpen: true,
       destination: { ...destination, description: desc },
       weather: weatherData,
+      imageUrl: image,
       loading: false,
     });
   }, []);

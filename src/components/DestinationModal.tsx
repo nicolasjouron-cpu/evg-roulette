@@ -17,7 +17,7 @@ function SkeletonLine({ width }: { width: string }) {
 }
 
 export default function DestinationModal({ state, onClose, onRetry }: DestinationModalProps) {
-  const { isOpen, destination, weather, loading } = state;
+  const { isOpen, destination, weather, imageUrl, loading } = state;
 
   return (
     <AnimatePresence>
@@ -61,6 +61,23 @@ export default function DestinationModal({ state, onClose, onRetry }: Destinatio
                   📍 {destination.city}
                 </h2>
                 <p className="text-slate-400 text-lg">{destination.country}</p>
+              </div>
+
+              {/* Photo */}
+              <div className="rounded-xl overflow-hidden mb-6 h-44 bg-[#1e293b]">
+                {loading && !imageUrl ? (
+                  <div className="w-full h-full animate-pulse bg-slate-700" />
+                ) : imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt={destination.city}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm">
+                    Photo indisponible
+                  </div>
+                )}
               </div>
 
               {/* Météo */}
